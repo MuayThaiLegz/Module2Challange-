@@ -5,28 +5,55 @@ This is a command line application to match applicants with qualifying loans.
 
 Example:
     $ python app.py
+
 """
 import sys
+
+import csv
+
 import fire
+
 import questionary
-from pathlib import Path
+
 import csv 
+
+from pathlib import Path
+
+
+"""
+Imports the necessary libraries.
+
+needed for proper functionality and testing of app.py.
+"""
 from qualifier.utils.fileio import load_csv
 from qualifier.utils.fileio import save_csv
-
-
 from qualifier.utils.calculators import (
     calculate_monthly_debt_ratio,
     calculate_loan_to_value_ratio,
 )
+"""
+Imports the modularized qualifiers funtions.
+
+load_csv, save_csv, calculate_monthly_debt_ratio, calculate_loan_to_value_ratio.
+
+from their file with in the app.py application. 
+"""
 
 from qualifier.filters.max_loan_size import filter_max_loan_size
 from qualifier.filters.credit_score import filter_credit_score
 from qualifier.filters.debt_to_income import filter_debt_to_income
 from qualifier.filters.loan_to_value import filter_loan_to_value
 
+"""
+Imports the modularized filtering functions.
+
+filter_max_loan_size, filter_credit_score, filter_debt_to_income, filter_loan_to_value.
+
+from their file with in the app.py application.
+"""
 
 def load_bank_data():
+
     """Ask for the file path to the latest banking data and load the CSV file.
 
     Returns:
@@ -100,23 +127,59 @@ def find_qualifying_loans(bank_data, credit_score, debt, income, loan, home_valu
     bank_data_filtered = filter_loan_to_value(loan_to_value_ratio, bank_data_filtered)
 
     print(f"Found {len(bank_data_filtered)} qualifying loans")
+    
+    if len(bank_data_filtered) == 0:
+
+        """
+    Provides an exit message if no loans found.
+
+     Args:
+     bank_data_filtered (list): A list of the banks willing to underwrite the loan.
+
+     Returns: Exit message if no loans found.
+        """
+
+        sys.exit("We are sorry to inform you, at this time we ca not meet the requirements of your loan")
 
     return bank_data_filtered
 
+   
+   
+
+
+   
+   
+
+    """
+    Provides an exit message if no loans found.
+
+     Args:
+     bank_data_filtered (list): A list of the banks willing to underwrite the loan.
+
+     Returns: Exit message if no loans found.
+        """
+
+
 
 def save_qualifying_loans(qualifying_loans):
+    """Prompt dialog to get the applicant's prefences for saving csv and out put file path
+
+    Args:
+        qualifying_loans (out put): banks willing to underwrite the loan.
+
+     Saves:
+      qualifying_loans to a csv file.
+    """
+   
     ans = questionary.confirm("Would you like to save the list of qualifying loans?").ask()
     if ans:
         output_path = questionary.text("Enter a file path to a outputfile (.csv):").ask()
     if not ans:
       sys.exit("Thank you for using this program.")
+    
+    header = ["Lender" "Max Loan Amount" "Max LTV" "MYax DTI" "Min Credit Score" "Interest Rate"]
 
-
-    header = ["Lender","Max Loan Amount","Max LTV","MYax DTI","Min Credit Score","Interest Rate"]
-
-    output_path = Path("data/qualifying_loans.csv")
-
-    save_csv(output_path, header, qualifying_loans)
+    save_csv(output_path, qualifying_loans)
 
 
 def run():

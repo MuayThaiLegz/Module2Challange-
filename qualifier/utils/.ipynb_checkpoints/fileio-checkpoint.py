@@ -30,21 +30,10 @@ def load_csv(csvpath):
     return data
 
 
-def save_csv(output_path, qualifying_loans):
-    """Writes the CSV file to the path provided.
-
-    Args:
-        output_path (Path): The csv file output.
-
-        header (Tittle row): The first line.
-
-        qualifying_loans (List): List of wliing banks.
-
-    Saves:
-        qualifying_loans to csv
-     """
-    with open(output_path,'w') as csvfile:
+def save_csv(output_path, header, qualifying_loans):
+    with open(output_path,'w',newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
+        csvwriter.writerows(header)
         csvwriter.writerows(qualifying_loans)
 
 
